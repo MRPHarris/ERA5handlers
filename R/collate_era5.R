@@ -6,6 +6,9 @@
 #' @param string NULL or a single character string used to identify target file types within the filenames.
 #' @param coords NULL or a character string containing an individual lat, lon grid position e.g. c(-80.25, -81.25)
 #'
+#' @importFrom dplyr filter
+#' @importFrom rlist list.rbind
+#'
 #' @export
 #'
 collate_era5 <- function(filenames, string = NULL, coords = NULL){

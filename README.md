@@ -36,7 +36,21 @@ A simple workflow is outlined below.
 
 -   The `collate_era5()` function imports and parses ERA5 netcdf4 files.
     The package ships with a small netcdf4 file containing 2m
-    temperature data from 1999. The data includes the grid points lat =
-    c(-80.00 -80.25 -80.50) and lon = c(-81.50 -81.25 -81.00 -80.75
-    -80.50), covering a small portion of the southern Ellsworth
-    Mountains in Antarctica.
+    temperature data from 1999, used in line with the Copernicus
+    [license](https://cds.climate.copernicus.eu/api/v2/terms/static/licence-to-use-copernicus-products.pdf).
+    The data includes the grid points lat = c(-80.00 -80.25 -80.50) and
+    lon = c(-81.50 -81.25 -81.00 -80.75 -80.50), covering a small
+    portion of the southern Ellsworth Mountains in Antarctica.
+
+In this case, we use `extract_era5` to read in the single file,
+narrowing the coordinates slightly.
+
+``` r
+# Specify local data store
+# dat_store_era5 <- "D:/DATA/General data/ERA5/"
+# Get all the files in the directory
+# era5_fnames <- list.files(dat_store_era5)
+
+# Get target era5 file
+# temp2m_2000_PH <- collate_era5(era5_fnames, 'temp2m_1999', coords = c(-80.25, -81.25))
+```

@@ -22,6 +22,6 @@ trim_path_int <- function(filenames){
     filename_trimmed <- unlist(strsplit(filename,"/"))[length(unlist(strsplit(filename,"/")))]
     filename_trimmed
   } else{
-    message("Empty object; no path to trim.")
+    message("Empty object; no path to trim. Filenames may be missing.")
   }
 }
