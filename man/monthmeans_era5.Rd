@@ -9,6 +9,8 @@ monthmeans_era5(collated_era5, field = NULL, total_months = FALSE)
 \arguments{
 \item{collated_era5}{a set of collated era5 netcdf4 files, returned by collate_era5()}
 
+\item{field}{NULL or a character string specifying the field to target. e.g., 't2m' for surface temperature.}
+
 \item{total_months}{TRUE/FALSE to derive the means of individual months across all years, or each month type from all years.}
 }
 \description{

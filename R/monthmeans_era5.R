@@ -3,6 +3,7 @@
 #' @description Derive monthly means of a given era5 file.
 #'
 #' @param collated_era5 a set of collated era5 netcdf4 files, returned by collate_era5()
+#' @param field NULL or a character string specifying the field to target. e.g., 't2m' for surface temperature.
 #' @param total_months TRUE/FALSE to derive the means of individual months across all years, or each month type from all years.
 #'
 #' @importFrom dplyr group_by
