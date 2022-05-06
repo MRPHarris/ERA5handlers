@@ -87,7 +87,7 @@ month_labs <- c("J","F","M","A","M","J","J","A","S","O","N","D")
 ggplot() +
   # SD polygon
   geom_polygon(data = sd_polygon_avtemp, aes(x = x, y = y), fill = "grey60", colour = "NA", alpha = 0.2) +
-  # Avlat
+  # Avtemp
   geom_line(data = PH_temp_monthmeans, aes(x = month, y = month_varmean)) +
   geom_point(data = PH_temp_monthmeans, aes(x = month, y = month_varmean)) +
   # SD: upper
