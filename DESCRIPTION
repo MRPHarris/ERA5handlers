@@ -20,3 +20,5 @@ Imports:
     ncdf4,
     purrr,
     tibble
+Depends:
+    tidyverse
