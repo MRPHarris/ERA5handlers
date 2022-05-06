@@ -11,6 +11,8 @@
 #' @importFrom ncdf4 nc_close
 #' @importFrom dplyr filter
 #' @importFrom dplyr mutate
+#' @importFrom dplyr bind_cols
+#' @importFrom dplyr pull
 #' @importFrom magrittr %>%
 #'
 #' @export

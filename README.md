@@ -46,7 +46,7 @@ In this case, we use `extract_era5` to read in the single file,
 narrowing the coordinates slightly.
 
 ``` r
-# # Load package
+# Load package 
 # library(ERA5handlers)
 # # Specify local data store
 # dat_store_era5 <- "D:/DATA/General data/ERA5/"
