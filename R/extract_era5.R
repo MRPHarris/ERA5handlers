@@ -10,6 +10,7 @@
 #' @importFrom ncdf4 ncatt_get
 #' @importFrom ncdf4 nc_close
 #' @importFrom dplyr filter
+#' @importFrom dplyr mutate
 #' @importFrom magrittr %>%
 #'
 #' @export

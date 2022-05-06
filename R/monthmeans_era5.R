@@ -7,6 +7,7 @@
 #'
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise_at
+#' @importFrom dplyr mutate
 #' @importFrom magrittr %>%
 #'
 #' @export

@@ -47,7 +47,6 @@ narrowing the coordinates slightly.
 
 ``` r
 # # Load package
-# library(pacman)
 # library(ERA5handlers)
 # # Specify local data store
 # dat_store_era5 <- "D:/DATA/General data/ERA5/"
