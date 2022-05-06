@@ -8,6 +8,7 @@
 #'
 #' @importFrom dplyr filter
 #' @importFrom rlist list.rbind
+#' @importFrom magrittr %>%
 #'
 #' @export
 #'

@@ -46,11 +46,13 @@ In this case, we use `extract_era5` to read in the single file,
 narrowing the coordinates slightly.
 
 ``` r
-# Specify local data store
+# # Load package
+# library(pacman)
+# library(ERA5handlers)
+# # Specify local data store
 # dat_store_era5 <- "D:/DATA/General data/ERA5/"
-# Get all the files in the directory
-# era5_fnames <- list.files(dat_store_era5)
-
-# Get target era5 file
-# temp2m_2000_PH <- collate_era5(era5_fnames, 'temp2m_1999', coords = c(-80.25, -81.25))
+# # Get all the files in the directory
+# era5_fnames <- list.files(dat_store_era5, full.names = TRUE)
+# # Get target era5 file
+# temp2m_2000_PH <- collate_era5(era5_fnames, string = 'temp2m_1999', coords = c(-80.25, -81.25))
 ```
