@@ -5,10 +5,10 @@
 #' @param nc_filepath full file path to the target netcdf4 era5 file.
 #' @param coords a character string containing an individual lat, lon grid position e.g. c(-80.25, -81.25)
 #'
-#' @importFrom netcdf4 ncvar_get
-#' @importFrom netcdf4 nc_open
-#' @importFrom netcdf4 ncatt_get
-#' @importFrom netcdf4 nc_close
+#' @importFrom ncdf4 ncvar_get
+#' @importFrom ncdf4 nc_open
+#' @importFrom ncdf4 ncatt_get
+#' @importFrom ncdf4 nc_close
 #' @importFrom dplyr filter
 #'
 #' @export
