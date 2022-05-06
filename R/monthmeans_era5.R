@@ -6,14 +6,19 @@
 #' @param total_months TRUE/FALSE to derive the means of individual months across all years, or each month type from all years.
 #'
 #' @importFrom dplyr group_by
+#' @importFrom dplyr filter
 #' @importFrom dplyr summarise_at
 #' @importFrom dplyr mutate
 #' @importFrom magrittr %>%
 #'
 #' @export
 #'
-monthmeans_era5 <- function(collated_era5, total_months = FALSE){
+monthmeans_era5 <- function(collated_era5, field = NULL, total_months = FALSE){
   if(!isTRUE(total_months)){
+    if(!is.null(field)){
+      collated_era5 <- collated_era5 %>%
+        filter(name = field)
+    }
     collated_era5 <- collated_era5 %>%
       group_by(month_seq) %>%
       mutate(month_varmean = mean(value, na.rm = T)) %>%
@@ -23,6 +28,10 @@ monthmeans_era5 <- function(collated_era5, total_months = FALSE){
       summarise_at(vars(month_varmean,month_varsd,year), mean) %>%
       'colnames<-'(c('month','month_varmean','month_varsd','year'))
   } else {
+    if(!is.null(field)){
+      collated_era5 <- collated_era5 %>%
+        filter(name = field)
+    }
     collated_era5 <- collated_era5 %>%
       group_by(month) %>%
       mutate(month_varmean = mean(value, na.rm = T)) %>%

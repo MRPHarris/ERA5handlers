@@ -4,7 +4,7 @@
 \alias{monthmeans_era5}
 \title{Derive monthly means of ERA5 data.}
 \usage{
-monthmeans_era5(collated_era5, total_months = FALSE)
+monthmeans_era5(collated_era5, field = NULL, total_months = FALSE)
 }
 \arguments{
 \item{collated_era5}{a set of collated era5 netcdf4 files, returned by collate_era5()}
