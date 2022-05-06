@@ -13,7 +13,7 @@
 #'
 #' @export
 #'
-extract_era5nc <- function(nc_filepath, coords = NULL){
+extract_era5 <- function(nc_filepath, coords = NULL){
   ## nc handling heavily adapted from https://renewable-analytics.netlify.app/2018/06/25/using-era-interim-in-r/#open-the-file
   nc_file <- nc_open(nc_filepath)
   # Extract coordinate information
