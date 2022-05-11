@@ -36,7 +36,7 @@ A simple workflow is outlined below.
 
 -   The `collate_era5()` function imports and parses ERA5 netcdf4 files.
     The package ships with a small netcdf4 file containing 2m
-    temperature data from 1999, used in line with the Copernicus
+    temperature data from 2000, used in line with the Copernicus
     [license](https://cds.climate.copernicus.eu/api/v2/terms/static/licence-to-use-copernicus-products.pdf).
     The data includes the grid points lat = c(-80.00 -80.25 -80.50) and
     lon = c(-81.50 -81.25 -81.00 -80.75 -80.50), covering a small
@@ -53,19 +53,19 @@ dat_store_era5 <- "D:/DATA/General data/ERA5/"
 # Get filenames in store
 era5_fnames <- list.files(dat_store_era5, full.names = TRUE)
 # Get target era5 file
-temp2m_1999_PH <- collate_era5(era5_fnames, string = 'temp2m_1999', coords = c(-80.25, -81.25))
-head(temp2m_1999_PH)
+temp2m_2000_PH <- collate_era5(era5_fnames, string = 'temp2m_2000', coords = c(-80.25, -81.25))
+head(temp2m_2000_PH)
 ```
 
     #> # A tibble: 6 x 12
     #>   value   lon   lat timestamp           name  coord       year month   day  hour
     #>   <dbl> <dbl> <dbl> <dttm>              <fct> <fct>      <dbl> <dbl> <dbl> <dbl>
-    #> 1  258. -81.2 -80.2 1999-01-01 00:00:00 t2m   -81.25 -8~  1999     1     1     0
-    #> 2  257. -81.2 -80.2 1999-01-01 01:00:00 t2m   -81.25 -8~  1999     1     1     1
-    #> 3  257. -81.2 -80.2 1999-01-01 02:00:00 t2m   -81.25 -8~  1999     1     1     2
-    #> 4  256. -81.2 -80.2 1999-01-01 03:00:00 t2m   -81.25 -8~  1999     1     1     3
-    #> 5  255. -81.2 -80.2 1999-01-01 04:00:00 t2m   -81.25 -8~  1999     1     1     4
-    #> 6  255. -81.2 -80.2 1999-01-01 05:00:00 t2m   -81.25 -8~  1999     1     1     5
+    #> 1  259. -81.2 -80.2 2000-01-01 00:00:00 t2m   -81.25 -8~  2000     1     1     0
+    #> 2  258. -81.2 -80.2 2000-01-01 01:00:00 t2m   -81.25 -8~  2000     1     1     1
+    #> 3  258. -81.2 -80.2 2000-01-01 02:00:00 t2m   -81.25 -8~  2000     1     1     2
+    #> 4  257. -81.2 -80.2 2000-01-01 03:00:00 t2m   -81.25 -8~  2000     1     1     3
+    #> 5  257. -81.2 -80.2 2000-01-01 04:00:00 t2m   -81.25 -8~  2000     1     1     4
+    #> 6  257. -81.2 -80.2 2000-01-01 05:00:00 t2m   -81.25 -8~  2000     1     1     5
     #> # ... with 2 more variables: month_seq <dbl>, day_seq <dbl>
 
 Imported data can now be analysed freely. A simple monthly value
@@ -76,7 +76,7 @@ across multiple years.
 
 ``` r
 # Derive month means. Single year.
-PH_temp_monthmeans <- monthmeans_era5(temp2m_1999_PH, total_months = TRUE) %>%
+PH_temp_monthmeans <- monthmeans_era5(temp2m_2000_PH, total_months = TRUE) %>%
   mutate(month_varmean = month_varmean - 273.15) # K to C conversion
 # Plot the monthly temperature means at this grid point for 1999, with standard devations
 sd_polygon_avtemp <- data.frame(x = c(rep(PH_temp_monthmeans$month), 
@@ -100,7 +100,7 @@ ggplot() +
   scale_x_continuous(breaks = seq(1,12,1), labels = month_labs, expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0), limits = c(-40,-5), breaks = seq(-40,-5,5)) +
   labs(x = "Month", y = "Temp in C") +
-  ggtitle('ERA5 mean monthly temperature during 1999 for 80.25S 81.25W') +
+  ggtitle('ERA5 mean monthly 2m temperature during 2000 for 80.25S 81.25W') +
   theme_cowplot(12)
 ```
 
