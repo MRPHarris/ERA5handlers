@@ -13,7 +13,11 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr bind_cols
 #' @importFrom dplyr pull
+#' @importFrom tibble as_tibble
+#' @importFrom tibble tibble
 #' @importFrom magrittr %>%
+#' @importFrom purrr map_df
+#' @importFrom purrr map
 #'
 #' @export
 #'
@@ -42,8 +46,8 @@ extract_era5 <- function(nc_filepath, coords = NULL){
     # VAR now has three elements not one.
     # This code now assumes you're after not the number and expver vars.
     data <- tibble(name = attributes(nc_file$var)$names[which(attributes(nc_file$var)$names != "number" & attributes(nc_file$var)$names != "expver")]) %>%
-      bind_cols(purrr::map_df(.$name, ncatt_get, nc = nc_file)) %>%
-      mutate(values = purrr::map(name, ncvar_get, nc = nc_file))
+      bind_cols(map_df(.$name, ncatt_get, nc = nc_file)) %>%
+      mutate(values = map(name, ncvar_get, nc = nc_file))
   } else {
     # Pre-late 2024 ERA5 netcdf4 file format
     # Extract coordinate information
@@ -56,13 +60,13 @@ extract_era5 <- function(nc_filepath, coords = NULL){
     timestamp = as.POSIXct(t * 3600, tz = 'GMT', origin = tustr[[1]][3])
     # Basic parsing of NC data. Frame with all attributes.
     data<- tibble(name = attributes(nc_file$var)$names) %>%
-      bind_cols(purrr::map_df(.$name, ncatt_get, nc = nc_file)) %>% # Get basic names
-      mutate(values = purrr::map(name, ncvar_get, nc = nc_file)) # Acquire values
+      bind_cols(map_df(.$name, ncatt_get, nc = nc_file)) %>% # Get basic names
+      mutate(values = map(name, ncvar_get, nc = nc_file)) # Acquire values
 
   }
   nc_close(nc_file)
   # pre-allocate DF for desired grid square
-  df_int <-expand.grid(lon = lon, lat = lat, timestamp = timestamp, name = data$name) %>%
+  df_int <- expand.grid(lon = lon, lat = lat, timestamp = timestamp, name = data$name) %>%
     mutate(coord = factor(paste(lon,lat,'/')))
   # Pull data.
   df <- data %>%
