@@ -1,46 +1,65 @@
 
-This package provides a set of simple handling functions for importing,
-parsing, and summarising ERA5 netcdf4 files downloaded from the
-copernicus climate data store (CDS). It has been tested using single
-levels and pressure levels data, with files downloaded both manually and
-through API methods such as
+This package provides a set of simple handling functions for
+downloading, importing, parsing, and summarising ERA5 netcdf4 files
+downloaded from the copernicus climate data store (CDS). It has been
+tested using single levels and pressure levels data, with files
+downloaded both manually and through API methods such as
 [ecmwfr](https://github.com/bluegreen-labs/ecmwfr).
 
 A simple workflow is outlined below.
 
 1)  Create an account on the Copernicus CDS
 
--   Navigate to <https://cds.climate.copernicus.eu/cdsapp#!/home> and
-    create an account.
+- Go to the [Copernicus
+  CDS](https://cds.climate.copernicus.eu/cdsapp#!/home) and create an
+  account.
 
-2)  Download ERA5 netcdf4 data using manual or API methods
+2)  Download ERA5 netcdf4 data
 
--   ERA5 data can be fetched manually from the CDS using the browser
-    interface:
-    <https://cds.climate.copernicus.eu/cdsapp#!/search?type=dataset&text=ERA5>.
+- You can do this either [manually from the
+  CDS](https://cds.climate.copernicus.eu/cdsapp#!/search?type=dataset&text=ERA5)
+  or via the API - see steps below.
 
-3)  Name files in a local store
+- Install and load the `ERA5handlers` package. This package and its
+  dependencies can be fetched with the devtools package, using
+  `devtools::install_github("MRPHarris/ERA5handlers")`
 
--   Give the files a suitable name that conforms to your chosen file
-    naming convention. If you are working with individual field types
-    (for example, 2m temperature), but are storing those files alongside
-    other file of different field types, files of a common field type
-    should be named to reflect this.
+- Get your API key from the CDS (click on your profile and scroll down).
 
-4)  Install and load the ERA5handlers package
+- The `get_CDS_era5()` function provides a simple mechanism (a wrapper
+  for [ecmwfr::wf_request](https://github.com/bluegreen-labs/ecmwfr)) to
+  submit sequential requests to the CDS for ERA-5 data. In the example
+  below, I submit requests to download 2m temperature and total
+  precipitation data for a small area over Roosevelt Island on the Ross
+  Ice Shelf covering 01/01/1990 - 31/12/1991. The data will be left as a
+  series of monthly .nc files in the specified directory. Any data
+  downloaded as a .zip will be unzipped, renamed, and then the archive
+  deleted.
 
--   This package and its dependencies can be fetched with the devtools
-    package, using `devtools::install_github("MRPHarris/ERA5handlers")`
+``` r
+export_dir = "C:/send/files/here"
+get_CDS_era5(key = "0000-I'm-not-going-to-show-my-API-key-here",
+             user = "m.harris@gns.cri.nz",
+             archive = TRUE,
+             dataset = "reanalysis-era5-single-levels",
+             coords = c(-79.25, -161.75, -79.5, -161.5), # NWSE, RICE coords
+             variables = c("2m_temperature","total_precipitation"),
+             by = "month",
+             start_YYYYMM = "199001",
+             end_YYYYMM = "199212",
+             identifier = "RICE",
+             download_directory = export_dir)
+```
 
-5)  Import desired files into R
+3)  Import desired files into R
 
--   The `collate_era5()` function imports and parses ERA5 netcdf4 files.
-    The package ships with a small netcdf4 file containing 2m
-    temperature data from 2000, used in line with the Copernicus
-    [license](https://cds.climate.copernicus.eu/api/v2/terms/static/licence-to-use-copernicus-products.pdf).
-    The data includes the grid points lat = c(-80.00 -80.25 -80.50) and
-    lon = c(-81.50 -81.25 -81.00 -80.75 -80.50), covering a small
-    portion of the southern Ellsworth Mountains in Antarctica.
+- The `collate_era5()` function imports and parses ERA5 netcdf4 files.
+  The package ships with a small netcdf4 file containing 2m temperature
+  data from 2000, used in line with the Copernicus
+  [license](https://cds.climate.copernicus.eu/api/v2/terms/static/licence-to-use-copernicus-products.pdf).
+  The data includes the grid points lat = c(-80.00 -80.25 -80.50) and
+  lon = c(-81.50 -81.25 -81.00 -80.75 -80.50), covering a small portion
+  of the southern Ellsworth Mountains in Antarctica.
 
 In this case, we use `collate_era5()` to read in the single file, and
 narrow the coordinates to a single grid point.
@@ -49,7 +68,7 @@ narrow the coordinates to a single grid point.
 # Load package
 library(ERA5handlers)
 # Specify local data store
-dat_store_era5 <- "D:/DATA/General data/ERA5/"
+dat_store_era5 <- paste0(here(),"/data-raw/")
 # Get filenames in store
 era5_fnames <- list.files(dat_store_era5, full.names = TRUE)
 # Get target era5 file
@@ -57,16 +76,18 @@ temp2m_2000_PH <- collate_era5(era5_fnames, string = 'temp2m_2000', coords = c(-
 head(temp2m_2000_PH)
 ```
 
-    #> # A tibble: 6 x 12
-    #>   value   lon   lat timestamp           name  coord       year month   day  hour
-    #>   <dbl> <dbl> <dbl> <dttm>              <fct> <fct>      <dbl> <dbl> <dbl> <dbl>
-    #> 1  259. -81.2 -80.2 2000-01-01 00:00:00 t2m   -81.25 -8~  2000     1     1     0
-    #> 2  258. -81.2 -80.2 2000-01-01 01:00:00 t2m   -81.25 -8~  2000     1     1     1
-    #> 3  258. -81.2 -80.2 2000-01-01 02:00:00 t2m   -81.25 -8~  2000     1     1     2
-    #> 4  257. -81.2 -80.2 2000-01-01 03:00:00 t2m   -81.25 -8~  2000     1     1     3
-    #> 5  257. -81.2 -80.2 2000-01-01 04:00:00 t2m   -81.25 -8~  2000     1     1     4
-    #> 6  257. -81.2 -80.2 2000-01-01 05:00:00 t2m   -81.25 -8~  2000     1     1     5
-    #> # ... with 2 more variables: month_seq <dbl>, day_seq <dbl>
+    #> # A tibble: 6 × 12
+    #>   value       lon    lat timestamp           name  coord  year month   day  hour
+    #>   <dbl> <dbl[1d]> <dbl[> <dttm[1d]>          <fct> <fct> <dbl> <dbl> <dbl> <dbl>
+    #> 1  259.     -81.2  -80.2 2000-01-01 00:00:00 t2m   -81.…  2000     1     1     0
+    #> 2  258.     -81.2  -80.2 2000-01-01 01:00:00 t2m   -81.…  2000     1     1     1
+    #> 3  258.     -81.2  -80.2 2000-01-01 02:00:00 t2m   -81.…  2000     1     1     2
+    #> 4  257.     -81.2  -80.2 2000-01-01 03:00:00 t2m   -81.…  2000     1     1     3
+    #> 5  257.     -81.2  -80.2 2000-01-01 04:00:00 t2m   -81.…  2000     1     1     4
+    #> 6  257.     -81.2  -80.2 2000-01-01 05:00:00 t2m   -81.…  2000     1     1     5
+    #> # ℹ 2 more variables: month_seq <dbl>, day_seq <dbl>
+
+4)  Go nuts
 
 Imported data can now be analysed freely. A simple monthly value
 aggregator is provided in `monthmeans_era5()`, which will determine the
@@ -104,4 +125,4 @@ ggplot() +
   theme_cowplot(12)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />

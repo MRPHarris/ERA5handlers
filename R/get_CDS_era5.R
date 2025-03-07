@@ -23,6 +23,7 @@ get_CDS_era5 <- function(key,
                          user,
                          coords = c(-79.25, -161.75, -79.5, -161.5),
                          by = "month",
+                         which_dataset = "reanalysis-era5-single-levels",
                          variables = c("2m_temperature","total_precipitation"),
                          start_YYYYMM = "197901",
                          end_YYYYMM = "202412",
@@ -51,6 +52,7 @@ get_CDS_era5 <- function(key,
       reqs[[n]] <- request_month(year = yr,
                                  month = mth,
                                  vars = variables,
+                                 dataset = which_dataset,
                                  destination = paste0("ERA5-",identifier,"-",yr,"-",mth),
                                  days_seq = day_seq,
                                  coordinates = coords)
@@ -87,6 +89,7 @@ request_month <- function(year,
                           destination,
                           vars = c("2m temperature","total_precipitation"),
                           days_seq,
+                          dataset = "reanalysis-era5-single-levels",
                           coordinates){
   req <- list(
     product_type = "reanalysis",
@@ -98,7 +101,7 @@ request_month <- function(year,
     area = coordinates,
     data_format = "netcdf",
     download_format =  'unarchived',
-    dataset_short_name = "reanalysis-era5-single-levels",
+    dataset_short_name = dataset,
     target = paste0(destination,".nc")
   )
   req
