@@ -266,7 +266,7 @@ zipcheck <- function(filename,
   fs <- list.files(directory)
   fs_long <- list.files(directory, full.names = T)
   fs_it <- fs_long[which(grepl(fname,fs))]
-  if(file_ext(fs_it) == 'zip'){
+  if(tools::file_ext(fs_it) == 'zip'){
     dir.create(paste0(directory,"zip-in-progress/"))
     unzip(fs_it,
           exdir = paste0(directory,"zip-in-progress/"))
@@ -282,7 +282,7 @@ zipcheck <- function(filename,
       if(verbose){message("Multiple files unzipped and renamed: \n",paste0(to_files,"\n"))}
     }
     unlink(paste0(directory,"zip-in-progress/"), force = T, recursive = T)
-  } else if(file_ext(fs_it) == 'nc'){
+  } else if(tools::file_ext(fs_it) == 'nc'){
     # Nothing to do!
   }
 }
