@@ -51,8 +51,8 @@ get_CDS_era5(key = "0000-I'm-not-going-to-show-my-API-key-here",
              download_directory = export_dir)
 ```
 
-- Alternatively, here is code for500 hPa geopotential height data for
-  the entire Southern Hemisphere at 6h timesteps covering 1950 to 2020,
+- Alternatively, here is code for 500 hPa geopotential height data for
+  the entire southern hemisphere at 6h timesteps covering 1950 to 2020,
   fetched as yearly requests.
 
 ``` r
@@ -68,7 +68,7 @@ get_CDS_era5(key = "0000-I'm-not-going-to-show-my-API-key-here",
              time = c("0","6","12","18"),
              start_YYYYMM = "195001",
              end_YYYYMM = "202012",
-             identifier = "SH_GPH_6H",
+             identifier = "SH-GPH-6h",
              download_directory = export_dir)
 ```
 
