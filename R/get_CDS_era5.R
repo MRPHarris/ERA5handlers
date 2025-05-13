@@ -6,6 +6,7 @@
 #' @param user email address associated with the above API key.
 #' @param coords a vector of latitude and longitude for a bounding box to use when fetching. Refer to the web request form. Order is c(N,W,S,E).
 #' @param by individual request size. Only "month" supported currently, as it is recommended for being the most efficient.
+#' @param time character vector containing the hours from each day to grab. NULL for all hours.
 #' @param variables strings denoting variables to get. Refer to [ecmwfr::wf_request()].
 #' @param start_YYYYMM A string for starting year-month in the format "YYYYMM"
 #' @param end_YYYYMM A string for ending year-month in the format "YYYYMM"
@@ -23,7 +24,9 @@ get_CDS_era5 <- function(key,
                          user,
                          coords = c(-79.25, -161.75, -79.5, -161.5),
                          by = "month",
+                         time = NULL,
                          which_dataset = "reanalysis-era5-single-levels",
+                         pressure_level = NULL,
                          variables = c("2m_temperature","total_precipitation"),
                          start_YYYYMM = "197901",
                          end_YYYYMM = "202412",
@@ -40,6 +43,11 @@ get_CDS_era5 <- function(key,
   start_date = as.Date(paste0(start_YYYYMM,"01"), format = "%Y%m%d")
   edays = as.character(days_in_month(as.numeric(substr(end_YYYYMM,5,6))))
   end_date = as.Date(paste0(end_YYYYMM,edays), format = "%Y%m%d")
+  ## Format hours, if specified
+  if(!is.null(time)){
+    time <- str_pad(as.character(time),2,'left',0)
+    time <- paste0(time,":00")
+  }
   ## Form requests in loop prior to execution
   if(by == "month"){
     # message("Formatting monthly requests between ",start_date," and ",end_date)
@@ -51,14 +59,30 @@ get_CDS_era5 <- function(key,
       day_seq = str_pad(seq(1,days_in_month(month(dateseq[n])),1),2,'left',0)
       reqs[[n]] <- request_month(year = yr,
                                  month = mth,
+                                 time = time,
                                  vars = variables,
                                  dataset = which_dataset,
+                                 pressure_level = pressure_level,
                                  destination = paste0("ERA5-",identifier,"-",yr,"-",mth),
                                  days_seq = day_seq,
                                  coordinates = coords)
     }
   } else if(by == "year"){
-    message("Go for months instead :)")
+    # message("Go for months instead :)")
+    dateseq <- seq(start_date, end_date, by = "1 year")
+    reqs <- vector('list',length(dateseq)) %>% 'names<-'(c(paste0(year(dateseq),"-",unlist(lapply(str_split(dateseq,"-"),"[[",2)))))
+    for(n in seq_along(reqs)){
+      yr = as.character(year(dateseq[n]))
+      # mth = str_pad(month(dateseq[n]),2,'left',0)
+      day_seq = str_pad(seq(1,31,1),2,'left',0)
+      reqs[[n]] <- request_year(year = yr,
+                                vars = variables,
+                                time = time,
+                                dataset = which_dataset,
+                                destination = paste0("ERA5-",identifier,"-",yr),
+                                pressure_level = pressure_level,
+                                coordinates = coords)
+    }
   }
   ## Now execute the requests
   for(r in seq_along(reqs)){
@@ -78,32 +102,91 @@ get_CDS_era5 <- function(key,
 #'
 #' @param year A year
 #' @param month A month as a zero-padded string, e.g. "01" for january
+#' @param time Times to get for each day
 #' @param destination A full filepath to the target for download.
+#' @param vars character string with one or entries matching variables to fetch
 #' @param days_seq A sequence of days in the month, zero-padded as with month.
+#' @param dataset Which dataset to fetch from?
+#' @param pressure_level character string containing the pressure level in hPa to fetch for, if the chosen dataset has pressure levels.
 #' @param coordinates A set of lat/lon coordinates for the DL box, in the order c(N,W,S,E)
 #'
 #' @noRd
 #'
 request_month <- function(year,
                           month,
+                          time = NULL,
                           destination,
                           vars = c("2m temperature","total_precipitation"),
                           days_seq,
                           dataset = "reanalysis-era5-single-levels",
+                          pressure_level = NULL,
                           coordinates){
+  if(!is.null(time)){
+    time = time
+  } else {
+    time = c("00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00")
+  }
   req <- list(
     product_type = "reanalysis",
     variable = vars,
     year = year,
     month = month,
     day = days_seq,
-    time = c("00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"),
+    time = time,
     area = coordinates,
     data_format = "netcdf",
     download_format =  'unarchived',
     dataset_short_name = dataset,
     target = paste0(destination,".nc")
   )
+  if(!is.null(pressure_level)){
+    req[["pressure_level"]] = pressure_level
+  }
+  req
+}
+
+#' Create yearly request for ECMWFR
+#'
+#' @description Create a list in the format used by ecmwfr for the Copernicus CDS API, for a specific month.
+#'
+#' @param year A year
+#' @param time Times to get for each day
+#' @param destination A full filepath to the target for download.
+#' @param vars character string with one or entries matching variables to fetch
+#' @param dataset Which dataset to fetch from?
+#' @param pressure_level character string containing the pressure level in hPa to fetch for, if the chosen dataset has pressure levels.
+#' @param coordinates A set of lat/lon coordinates for the DL box, in the order c(N,W,S,E)
+#'
+#' @noRd
+#'
+request_year <- function(year,
+                         destination,
+                         time = NULL,
+                         vars = c("2m temperature","total_precipitation"),
+                         dataset = "reanalysis-era5-single-levels",
+                         pressure_level = NULL,
+                         coordinates){
+  if(!is.null(time)){
+    time = time
+  } else {
+    time = c("00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00")
+  }
+  req <- list(
+    product_type = "reanalysis",
+    variable = vars,
+    year = year,
+    month = str_pad(seq(1,12,1),2,'left',0),
+    day = str_pad(seq(1,31,1),2,'left',0),
+    time = time,
+    area = coordinates,
+    data_format = "netcdf",
+    download_format =  'unarchived',
+    dataset_short_name = dataset,
+    target = paste0(destination,".nc")
+  )
+  if(!is.null(pressure_level)){
+    req[["pressure_level"]] = pressure_level
+  }
   req
 }
 
@@ -170,6 +253,8 @@ archive_folder <- function(dir,
 #' @param directory path for the above filename.
 #' @param verbose TRUE/FALSE to print message when complete
 #'
+#' @importFrom tools file_ext
+#'
 #' @noRd
 #'
 zipcheck <- function(filename,
@@ -181,7 +266,7 @@ zipcheck <- function(filename,
   fs <- list.files(directory)
   fs_long <- list.files(directory, full.names = T)
   fs_it <- fs_long[which(grepl(fname,fs))]
-  if(return_extn(fs_it) == 'zip'){
+  if(file_ext(fs_it) == 'zip'){
     dir.create(paste0(directory,"zip-in-progress/"))
     unzip(fs_it,
           exdir = paste0(directory,"zip-in-progress/"))
@@ -197,7 +282,7 @@ zipcheck <- function(filename,
       if(verbose){message("Multiple files unzipped and renamed: \n",paste0(to_files,"\n"))}
     }
     unlink(paste0(directory,"zip-in-progress/"), force = T, recursive = T)
-  } else if(return_extn(fs_it) == 'nc'){
+  } else if(file_ext(fs_it) == 'nc'){
     # Nothing to do!
   }
 }

@@ -51,6 +51,27 @@ get_CDS_era5(key = "0000-I'm-not-going-to-show-my-API-key-here",
              download_directory = export_dir)
 ```
 
+- Alternatively, here is code for500 hPa geopotential height data for
+  the entire Southern Hemisphere at 6h timesteps covering 1950 to 2020,
+  fetched as yearly requests.
+
+``` r
+export_dir = "C:/send/files/here"
+get_CDS_era5(key = "0000-I'm-not-going-to-show-my-API-key-here",
+             user = "m.harris@gns.cri.nz",
+             archive = TRUE,
+             dataset = "reanalysis-era5-pressure-levels",
+             pressure_level = "500",
+             coords = c(0, -180, -90, 180), # NWSE, RICE coords
+             variables = c("geopotential"),
+             by = "year",
+             time = c("0","6","12","18"),
+             start_YYYYMM = "195001",
+             end_YYYYMM = "202012",
+             identifier = "SH_GPH_6H",
+             download_directory = export_dir)
+```
+
 3)  Import desired files into R
 
 - The `collate_era5()` function imports and parses ERA5 netcdf4 files.
@@ -125,4 +146,4 @@ ggplot() +
   theme_cowplot(12)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

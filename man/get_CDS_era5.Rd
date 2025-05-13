@@ -2,13 +2,16 @@
 % Please edit documentation in R/get_CDS_era5.R
 \name{get_CDS_era5}
 \alias{get_CDS_era5}
-\title{Fetch ERA-5 nc files containing variables needed for an accumulation}
+\title{Fetch ERA-5 nc files}
 \usage{
 get_CDS_era5(
   key,
   user,
   coords = c(-79.25, -161.75, -79.5, -161.5),
   by = "month",
+  time = NULL,
+  which_dataset = "reanalysis-era5-single-levels",
+  pressure_level = NULL,
   variables = c("2m_temperature", "total_precipitation"),
   start_YYYYMM = "197901",
   end_YYYYMM = "202412",
@@ -25,6 +28,8 @@ get_CDS_era5(
 \item{coords}{a vector of latitude and longitude for a bounding box to use when fetching. Refer to the web request form. Order is c(N,W,S,E).}
 
 \item{by}{individual request size. Only "month" supported currently, as it is recommended for being the most efficient.}
+
+\item{time}{character vector containing the hours from each day to grab. NULL for all hours.}
 
 \item{variables}{strings denoting variables to get. Refer to \code{\link[ecmwfr:wf_request]{ecmwfr::wf_request()}}.}
 
